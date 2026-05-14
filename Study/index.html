@@ -11,7 +11,7 @@
         #hamster { 
             width: 600px;
             cursor: pointer; 
-            transition: 0.5s; 
+            transition: 0.6s; 
             display: inline-block; 
         }
         
@@ -76,37 +76,42 @@
         function feedHamster() {
             if (hunger > 0) {
                 hunger -= 10;
-                hSize += 10; // 밥 먹을 때마다 10px씩 커짐
+                hSize += 10;
 
-                // 이미지 교체와 크기 키우기
                 hamster.src = "hamsterEat.png"; 
                 hamster.style.width = hSize + "px";
-                
                 hamstatus.innerText = '(우물우물)';
                 message.innerText = '냠냠! 꺼억~';
                 document.getElementById('hunger').innerText = hunger;
-                
-                // 1초 뒤에 원래 표정으로
-                setTimeout(() => { 
-                    hamster.src = "hamster.png"; 
-                    message.innerText = '야르~';
-                    hamstatus.innerText = '';
-                }, 1000);
 
-                // ✨ 배고픔이 0이 됐을 때 처리 로직 추가
+                // ✨ 배고픔이 0이 됐을 때 (똥 싸기 로직)
                 if (hunger === 0) {
-                    message.innerText = '아 배불러';
-                    
+                    // 이전 예약된 '표정 돌아오기'가 있다면 무시하고 바로 똥 모드로!
+                    hamster.src = "hamsterddong.png"; 
+                    hamstatus.innerText = '끄응...';
+                    message.innerText = '아 배불러 똥 싸야징';
+
                     setTimeout(() => {
-                        hunger = 100; // 배고픔 리셋
-                        hSize = 600;  // 크기 리셋
-                        
-                        // 화면 갱신
+                        hunger = 100;
+                        hSize = 600;
                         document.getElementById('hunger').innerText = hunger;
                         hamster.style.width = hSize + "px";
+                        hamster.src = "hamster.png"; // 똥 다 싸고 기본으로
                         message.innerText = '배고파... 밥줘!';
-                    }, 5000); // 5000ms = 5초
+                        hamstatus.innerText = '';
+                    }, 5000);
+
+                    return; // ⚠️ 중요! 여기서 함수를 끝내야 아래 1초 뒤 원래대로 돌아가는 코드가 실행 안 됨!
                 }
+
+                // 1초 뒤에 원래 표정으로 (평소 밥 먹을 때만 실행)
+                setTimeout(() => { 
+                    if (hunger > 0) { // 혹시 모르니 배고픔이 남아있을 때만
+                        hamster.src = "hamster.png"; 
+                        message.innerText = '야르~';
+                        hamstatus.innerText = '';
+                    }
+                }, 1000);
 
             } else {
                 message.innerText = '햄스터가 뚱뚱해졌어요!';
